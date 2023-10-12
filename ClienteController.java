@@ -42,17 +42,39 @@ public class ClienteController {
         return cliente;
     }
 
-    @PutMapping("/clientes")
-    public Cliente updateCliente (@RequestBody Cliente cliente) {
-        Cliente clienteEncontrado = clientes.stream().
-                filter(cli -> cli.getName().equalsIgnoreCase(cliente.getName())).findFirst().orElseThrow();
+    @PutMapping("/clientes/{name}")
+    public Cliente updateCliente(@PathVariable String name, @RequestBody Cliente cliente) {
+        Cliente clienteEncontrado = null;
+        for (Cliente cli : clientes) {
+            if (cli.getName().equals(name)) {
+                clienteEncontrado = cli;
+                break;
+            }
+        }
 
-        clienteEncontrado.setName(cliente.getName());
+        if (clienteEncontrado != null) {
+            clienteEncontrado.setName(cliente.getName());
+            clienteEncontrado.setLastname(cliente.getLastname());
+            clienteEncontrado.setPassword(cliente.getPassword());
+            return clienteEncontrado;
+        }
 
-        clienteEncontrado.setLastname(cliente.getLastname());
-        clienteEncontrado.setPassword(cliente.getPassword());
         return clienteEncontrado;
     }
 
-}
+    @DeleteMapping("/clientes/{name}")
+    public Cliente borrarCliente(@PathVariable String name) {
+        Cliente clienteEncontrado = null;
+        for (Cliente cli : clientes) {
+            if (cli.getName().equals(name)) {
+                clienteEncontrado = cli;
+                break;
+            }
+        }
 
+        if (clienteEncontrado != null) {
+            clientes.remove(clienteEncontrado);
+            return clienteEncontrado;
+        }
+        return null;
+    }}
